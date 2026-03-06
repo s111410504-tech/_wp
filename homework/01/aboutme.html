@@ -1,165 +1,124 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>陳郁安的個人簡介</title>
+    <title>陳郁安的個人履歷</title>
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --accent-color: #3498db;
-            --bg-color: #f8f9fa;
-            --text-color: #333;
-        }
-
         body {
-            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
             line-height: 1.6;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f7f6;
         }
-
         .resume-card {
-            background: white;
-            width: 90%;
-            max-width: 600px;
+            background: #fff;
             padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-
-        .header {
-            text-align: center;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
         }
-
-        .header h1 {
-            margin: 0;
-            font-size: 2.2em;
-            letter-spacing: 2px;
-            color: var(--primary-color);
+        h2 {
+            color: #3498db;
+            font-size: 1.2em;
+            margin-top: 25px;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
         }
-
-        .header p {
-            margin: 10px 0 0;
-            color: #7f8c8d;
-            font-size: 1.1em;
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
         }
-
-        .section {
-            margin-bottom: 25px;
-        }
-
-        .section-title {
-            font-weight: bold;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            font-size: 0.9em;
-            letter-spacing: 1px;
+        .info-item {
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
         }
-
-        .section-title::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: #eee;
-            margin-left: 15px;
+        .label {
+            font-weight: bold;
+            color: #7f8c8d;
+            margin-right: 5px;
         }
-
-        .info-content {
-            padding-left: 5px;
-        }
-
-        .tag-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 5px;
-        }
-
-        .tag {
-            background: #ebf5fb;
-            color: #2980b9;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.9em;
-        }
-
-        .quote {
-            background: #fdfefe;
-            border-left: 4px solid #bdc3c7;
+        .section-content {
+            background: #f9f9f9;
             padding: 15px;
-            font-style: italic;
-            color: #555;
-            margin-top: 10px;
+            border-radius: 4px;
         }
-
-        @media (max-width: 480px) {
-            .resume-card { padding: 25px; }
+        ul {
+            padding-left: 20px;
+            margin: 5px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #95a5a6;
+            margin-top: 30px;
         }
     </style>
 </head>
 <body>
 
 <div class="resume-card">
-    <div class="header">
-        <h1>陳郁安</h1>
-        <p>金門大學資訊工程學系</p>
-    </div>
+    <h1>陳郁安 <small style="font-size: 0.5em; color: #7f8c8d;">Yu-An Chen</small></h1>
 
-    <div class="section">
-        <div class="section-title">聯絡資訊</div>
-        <div class="info-content">
-            <div>📞 0903-982-469</div>
-            <div>✉️ s111410504@student.nqu.edu.tw</div>
-            <div>📍 新北市新店區 / 金門縣金寧鄉</div>
+    <div class="info-grid">
+        <div class="info-item"><span class="label">年齡：</span>18 歲</div>
+        <div class="info-item"><span class="label">性別：</span>女</div>
+        <div class="info-item"><span class="label">生日：</span>民國96年2月7日</div>
+        <div class="info-item"><span class="label">手機：</span>0903-982-469</div>
+        <div class="info-item" style="grid-column: span 2;">
+            <span class="label">電子信箱：</span>s111410504@student.nqu.edu.tw
         </div>
     </div>
 
-    <div class="section">
-        <div class="section-title">學歷</div>
-        <div class="info-content">
-            <strong>國立金門大學</strong> — 資工系 (在學中)<br>
-            <strong>臺北市立景美女子高級中學</strong> (畢業)
-        </div>
+    <h2>學歷狀況</h2>
+    <div class="section-content">
+        <ul>
+            <li><strong>國立金門大學</strong> 資工系（就讀中）</li>
+            <li><strong>臺北市立景美女子高級中學</strong>（畢業）</li>
+        </ul>
     </div>
 
-    <div class="section">
-        <div class="section-title">經歷</div>
-        <div class="info-content">
-            <strong>晶湯匙 (共同存在餐飲集團)</strong> — 服務人員
-        </div>
+    <h2>工作經歷</h2>
+    <div class="section-content">
+        <p><strong>共同存在國際餐飲集團 - 晶湯匙</strong></p>
+        <p>擔任外場/相關職務，具備餐飲服務實務經驗。</p>
     </div>
 
-    <div class="section">
-        <div class="section-title">技能與語言</div>
-        <div class="tag-container">
-            <span class="tag">中文</span>
-            <span class="tag">英文</span>
-            <span class="tag">閩南語</span>
-            <span class="tag">普通重型機車駕照</span>
-            <span class="tag">羽球</span>
-            <span class="tag">解謎遊戲</span>
-        </div>
+    <h2>專業技能與證照</h2>
+    <div class="section-content">
+        <p><strong>語文能力：</strong>中文、英文（聽說讀寫）、閩南語（聽說）</p>
+        <p><strong>專業證照：</strong>普通重型機車駕照</p>
+        <p><strong>興趣專長：</strong>羽球、解謎類型遊戲</p>
     </div>
 
-    <div class="section">
-        <div class="section-title">自我評價</div>
-        <div class="quote">
-            「隨遇而安，個性隨和。遇到困難能冷靜解決不推辭。」
+    <h2>自我評價</h2>
+    <div class="section-content">
+        <p>人如其名，性格隨遇而安且隨和。面對困難時能保持冷靜、積極尋求解決方案，具備不推諉、勇於承擔的責任感。</p>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-item">
+            <h2>期望待遇</h2>
+            <div class="section-content">依公司規定</div>
+        </div>
+        <div class="info-item">
+            <h2>應徵項目</h2>
+            <div class="section-content">（尚未填寫）</div>
         </div>
     </div>
+</div>
+
+<div class="footer">
+    © 2024 陳郁安 個人履歷網頁
 </div>
 
 </body>
