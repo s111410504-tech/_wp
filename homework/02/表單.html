@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顧客滿意度調查問卷</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --bg-color: #f9f9fb;
+            --text-color: #2d3436;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #636e72;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        /* 輸入框樣式 */
+        input[type="text"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 8px rgba(108, 92, 231, 0.2);
+        }
+
+        /* 單選鈕與複選鈕樣式 */
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .option-item:hover {
+            background-color: #fdfdfd;
+        }
+
+        .option-item input {
+            margin-right: 12px;
+            accent-color: var(--primary-color);
+            width: 18px;
+            height: 18px;
+        }
+
+        /* 送出按鈕 */
+        button {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #5b4bc4;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #b2bec3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>產品服務調查</h1>
+    <p class="subtitle">感謝您撥冗分享您的真實想法，讓我們變得更好！</p>
+
+    <form id="surveyForm">
+        <div class="form-group">
+            <label for="name">您的姓名</label>
+            <input type="text" id="name" name="name" placeholder="例如：王小明" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">電子郵件</label>
+            <input type="email" id="email" name="email" placeholder="example@mail.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="source">您是從哪裡得知我們的？</label>
+            <select id="source" name="source">
+                <option value="">請選擇...</option>
+                <option value="social">社群媒體 (FB/IG)</option>
+                <option value="friend">朋友推薦</option>
+                <option value="search">Google 搜尋</option>
+                <option value="ads">廣告投放</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>您對本次服務的整體滿意度？</label>
+            <div class="options-group">
+                <label class="option-item">
+                    <input type="radio" name="satisfaction" value="very_happy" required> 非常滿意 😍
+                </label>
+                <label class="option-item">
+                    <input type="radio" name="satisfaction" value="happy"> 滿意 🙂
+                </label>
+                <label class="option-item">
+                    <input type="radio" name="satisfaction" value="neutral"> 普通 😐
+                </label>
+                <label class="option-item">
+                    <input type="radio" name="satisfaction" value="unhappy"> 不太滿意 ☹️
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>您最看重我們產品的哪些特點？（可多選）</label>
+            <div class="options-group">
+                <label class="option-item">
+                    <input type="checkbox" name="feature" value="design"> 外觀設計
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" name="feature" value="price"> 價格合理
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" name="feature" value="speed"> 運送速度
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" name="feature" value="service"> 售後服務
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="feedback">還有什麼想對我們說的嗎？</label>
+            <textarea id="feedback" name="feedback" rows="4" placeholder="歡迎留下您的建議..."></textarea>
+        </div>
+
+        <button type="submit">提交問卷</button>
+    </form>
+
+    <footer>© 2026 YourBrand 隱私權保護中</footer>
+</div>
+
+<script>
+    document.getElementById('surveyForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('感謝您的回饋！問卷已成功模擬送出。');
+    });
+</script>
+
+</body>
+</html>
