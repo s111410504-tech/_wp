@@ -1,0 +1,1 @@
+與AI對話:https://gemini.google.com/share/c2f34c52ed01
