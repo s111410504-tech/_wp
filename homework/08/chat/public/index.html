@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「劇」在一起</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Microsoft JhengHei", " PingFang TC", sans-serif; background: #f5f5f5; }
+    
+    #auth-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .auth-box { background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 350px; }
+    .auth-box h2 { text-align: center; margin-bottom: 20px; color: #333; }
+    .auth-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    .auth-box button { width: 100%; padding: 12px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+    .auth-box p { text-align: center; margin-top: 15px; color: #666; cursor: pointer; font-size: 14px; }
+    .auth-box .error { color: #d00; text-align: center; margin-bottom: 10px; font-size: 14px; }
+    
+    #main-screen { display: none; }
+    .header { background: #333; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { font-size: 24px; font-weight: 500; }
+    .logout-btn { background: #555; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    
+    .main-content { display: flex; gap: 20px; padding: 20px; }
+    .sidebar { width: 280px; }
+    .sidebar-box { background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; }
+    .sidebar-box h3 { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #eee; font-size: 16px; color: #333; }
+    .drama-item { padding: 10px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+    .drama-item:hover { background: #f9f9f9; }
+    .drama-item .title { font-weight: 500; color: #333; font-size: 14px; }
+    .drama-item .type { font-size: 12px; color: #888; }
+    .drama-item .date { font-size: 11px; color: #aaa; }
+    
+    .content-area { flex: 1; max-width: 800px; }
+    .section { display: none; }
+    .section.active { display: block; }
+    
+    .posts-list .post { background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; }
+    .posts-list .post .user { display: flex; align-items: center; margin-bottom: 10px; }
+    .posts-list .post .user .avatar { width: 40px; height: 40px; background: #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-weight: bold; color: #333; cursor: pointer; }
+    .posts-list .post .user .name { font-weight: 500; color: #333; cursor: pointer; }
+    .posts-list .post .user .time { font-size: 12px; color: #888; }
+    .posts-list .post .content { line-height: 1.6; color: #444; margin-bottom: 10px; }
+    .posts-list .post .content .drama-tag { background: #333; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-right: 5px; }
+    .posts-list .post .post-image { max-width: 100%; border-radius: 8px; margin-top: 10px; }
+    .posts-list .post .delete-btn { float: right; background: #ccc; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; color: #333; }
+    
+    .post-actions { display: flex; gap: 15px; padding: 10px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; margin: 10px 0; }
+    .post-actions button { background: none; border: none; cursor: pointer; font-size: 14px; color: #666; display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 4px; }
+    .post-actions button:hover { background: #f0f0f0; }
+    .post-actions button.liked { color: #e74c3c; }
+    
+    .comments-section { margin-top: 10px; }
+    .comments-section .comment { padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+    .comments-section .comment .comment-user { font-weight: 500; color: #333; margin-right: 8px; }
+    .comments-section .comment .comment-time { font-size: 12px; color: #888; margin-left: 8px; }
+    
+    .comment-input { display: flex; gap: 10px; margin-top: 10px; }
+    .comment-input input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 20px; font-size: 14px; }
+    .comment-input button { padding: 8px 15px; background: #333; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 14px; }
+    
+    .profile-header { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; border: 1px solid #ddd; position: relative; }
+    .profile-header .profile-avatar { width: 80px; height: 80px; background: #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; color: #333; margin: 0 auto 15px; }
+    .profile-header .profile-name { text-align: center; font-size: 24px; font-weight: 500; color: #333; }
+    .profile-header .profile-intro { text-align: center; color: #888; margin-top: 5px; font-size: 14px; }
+    .profile-header .edit-btn { position: absolute; top: 15px; right: 15px; background: #333; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    .profile-header .back-btn { position: absolute; top: 15px; left: 15px; background: #eee; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 14px; display: none; }
+    .profile-header .message-btn { position: absolute; top: 15px; right: 15px; background: #333; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 14px; display: none; }
+    
+    .profile-post-box { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; border: 1px solid #ddd; }
+    .profile-post-box textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; resize: none; height: 80px; font-family: inherit; font-size: 14px; }
+    .profile-post-box .image-upload { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    .profile-post-box .image-upload input[type="file"] { display: none; }
+    .profile-post-box .image-upload label { background: #eee; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    .profile-post-box .image-preview { margin-top: 10px; }
+    .profile-post-box .image-preview img { max-width: 200px; max-height: 150px; border-radius: 8px; }
+    .profile-post-box button { margin-top: 10px; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    
+    .edit-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; }
+    .edit-modal .modal-content { background: white; width: 400px; margin: 100px auto; padding: 20px; border-radius: 12px; }
+    .edit-modal h3 { margin-bottom: 15px; color: #333; }
+    .edit-modal input, .edit-modal textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    .edit-modal .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; }
+    .edit-modal .modal-buttons button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    .edit-modal .modal-buttons .save-btn { background: #333; color: white; }
+    .edit-modal .modal-buttons .cancel-btn { background: #eee; color: #333; }
+    
+    .chat-container { display: flex; height: 500px; background: white; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
+    .chat-list { width: 300px; border-right: 1px solid #eee; }
+    .chat-list h3 { padding: 15px; border-bottom: 1px solid #eee; font-size: 16px; color: #333; }
+    .chat-item { display: flex; align-items: center; padding: 15px; cursor: pointer; border-bottom: 1px solid #f0f0f0; }
+    .chat-item:hover { background: #f9f9f9; }
+    .chat-item.active { background: #f0f0f0; }
+    .chat-item .avatar { width: 45px; height: 45px; background: #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-weight: bold; font-size: 18px; color: #333; }
+    .chat-item .info { flex: 1; }
+    .chat-item .info .name { font-weight: 500; margin-bottom: 4px; color: #333; }
+    .chat-item .info .preview { font-size: 13px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
+    .chat-room { flex: 1; display: flex; flex-direction: column; }
+    .chat-header { padding: 15px; border-bottom: 1px solid #eee; font-weight: 500; display: flex; align-items: center; color: #333; }
+    .chat-header .avatar { width: 35px; height: 35px; background: #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px; color: #333; }
+    .chat-messages { flex: 1; padding: 15px; overflow-y: auto; background: #fafafa; }
+    .message { margin-bottom: 15px; display: flex; }
+    .message.sent { justify-content: flex-end; }
+    .message .bubble { max-width: 70%; padding: 10px 15px; border-radius: 18px; }
+    .message.sent .bubble { background: #333; color: white; }
+    .message.received .bubble { background: #e0e0e0; color: #333; }
+    .message .time { font-size: 11px; color: #888; margin-top: 5px; }
+    .message.sent .time { text-align: right; }
+    
+    .typing-indicator { font-size: 12px; color: #888; padding: 5px 15px; height: 25px; }
+    
+    .chat-input { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; background: white; }
+    .chat-input input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 14px; }
+    .chat-input button { padding: 10px 20px; background: #333; color: white; border: none; border-radius: 20px; cursor: pointer; }
+    
+    .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+    .nav-tabs button { padding: 10px 20px; background: white; border: 1px solid #ccc; border-radius: 20px; cursor: pointer; font-size: 14px; color: #333; }
+    .nav-tabs button.active { background: #333; color: white; border-color: #333; }
+  </style>
+</head>
+<body>
+  <div id="auth-screen">
+    <div class="auth-box">
+      <h2 id="auth-title">登入</h2>
+      <div class="error" id="auth-error"></div>
+      <input type="text" id="username" placeholder="使用者名稱">
+      <input type="password" id="password" placeholder="密碼">
+      <input type="text" id="nickname" placeholder="暱稱" style="display:none">
+      <button id="auth-btn" onclick="handleAuth()">登入</button>
+      <p onclick="toggleAuthMode()" id="auth-toggle">還沒有帳號？註冊</p>
+    </div>
+  </div>
+  
+  <div id="main-screen">
+    <div class="header">
+      <h1>「劇」在一起</h1>
+      <div>
+        <span id="user-nickname" style="margin-right: 15px;"></span>
+        <button class="logout-btn" onclick="logout()">登出</button>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="sidebar">
+        <div class="sidebar-box">
+          <h3>🔥 近期熱映</h3>
+          <div id="drama-list">
+            <div class="drama-item">
+              <div class="title">太空超人</div>
+              <div class="type">電影</div>
+              <div class="date">2026年6月上映</div>
+            </div>
+            <div class="drama-item">
+              <div class="title">玩具總動員5 </div>
+              <div class="type">電影</div>
+              <div class="date">2026年5月開播</div>
+            </div>
+            <div class="drama-item">
+              <div class="title">名偵探柯南高速公路的墮天使 </div>
+              <div class="type">電影</div>
+              <div class="date">2026年6月開播</div>
+            </div>
+            <div class="drama-item">
+              <div class="title">驚聲尖笑</div>
+              <div class="type">電影</div>
+              <div class="date">2026年5月上映</div>
+            </div>
+            <div class="drama-item">
+              <div class="title">欠妳的那場婚禮</div>
+              <div class="type">影集</div>
+              <div class="date">2026年6月開播</div>
+            </div>
+            <div class="drama-item">
+              <div class="title">魷魚遊戲 第三季</div>
+              <div class="type">影集</div>
+              <div class="date">2026年6月開播</div>
+            </div>
+            <div class="drama-item">
+              <div class="title">無赦之仇</div>
+              <div class="type">影集</div>
+              <div class="date">2026年6月開播</div>
+            </div>
+            <div class="drama-item">
+              <div class="title">怪獸8號 第二季</div>
+              <div class="type">動漫</div>
+              <div class="date">2026年7月開播</div>
+            </div>
+            <div class="drama-item">
+              <div class="title">光逝去的夏天</div>
+              <div class="type">影集</div>
+              <div class="date">2026年7月開播</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="content-area">
+        <div class="nav-tabs">
+          <button class="active" onclick="showSection('home')">🏠 分享牆</button>
+          <button onclick="showSection('profile')">👤 我的主頁</button>
+          <button onclick="showSection('messages')">💬 私訊</button>
+        </div>
+        
+        <div id="home-section" class="section active">
+          <div class="posts-list" id="posts-list"></div>
+        </div>
+        
+        <div id="profile-section" class="section">
+          <div class="profile-header">
+            <button class="back-btn" onclick="goBack()" id="profile-back-btn">← 返回分享牆</button>
+            <button class="edit-btn" onclick="showEditModal()" id="profile-edit-btn">✏️ 編輯</button>
+            <button class="message-btn" onclick="messageUser()" id="profile-message-btn">💬 私訊</button>
+            <div class="profile-avatar" id="profile-avatar"></div>
+            <div class="profile-name" id="profile-name"></div>
+            <div class="profile-intro" id="profile-intro"></div>
+          </div>
+          <div class="profile-post-box" id="my-post-box">
+            <textarea id="my-post-content" placeholder="分享你最近看的劇或電影吧！"></textarea>
+            <div class="image-upload">
+              <label for="image-input">📷 上傳照片</label>
+              <input type="file" id="image-input" accept="image/*" onchange="previewImage()">
+              <div class="image-preview" id="image-preview"></div>
+            </div>
+            <button onclick="publishMyPost()">發布</button>
+          </div>
+          <div class="posts-list" id="profile-posts"></div>
+        </div>
+        
+        <div id="messages-section" class="section">
+          <div class="chat-container">
+            <div class="chat-list">
+              <h3>對話列表</h3>
+              <div id="conversation-list"></div>
+            </div>
+            <div class="chat-room" id="chat-room" style="display:none;">
+              <div class="chat-header" id="chat-header">
+                <div class="avatar" id="chat-avatar"></div>
+                <span id="chat-name"></span>
+              </div>
+              <div class="typing-indicator" id="typing-indicator"></div>
+              <div class="chat-messages" id="chat-messages"></div>
+              <div class="chat-input">
+                <input type="text" id="message-input" placeholder="輸入訊息..." onkeypress="handleEnter(event)" oninput="handleTyping()">
+                <button onclick="sendMessage()">傳送</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="edit-modal" id="edit-modal">
+    <div class="modal-content">
+      <h3>編輯個人主頁</h3>
+      <input type="text" id="edit-nickname" placeholder="暱稱">
+      <textarea id="edit-bio" placeholder="個人簡介" rows="3"></textarea>
+      <input type="text" id="edit-genre" placeholder="喜歡的類型">
+      <div class="modal-buttons">
+        <button class="cancel-btn" onclick="closeEditModal()">取消</button>
+        <button class="save-btn" onclick="saveProfile()">儲存</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let currentUser = null;
+    let isLogin = true;
+    let currentChatUser = null;
+    let users = [];
+    let typingTimer = null;
+    let checkTypingTimer = null;
+    let messagePollTimer = null;
+    let lastMessageId = 0;
+    let allPostsData = [];
+    let myPostsData = [];
+    let viewingUserId = null;
+    let selectedImage = null;
+    let userProfile = { bio: '', favorite_genre: '' };
+    
+    function saveUser(user) {
+      sessionStorage.setItem('social_user', JSON.stringify(user));
+    }
+    
+    function getSavedUser() {
+      const saved = sessionStorage.getItem('social_user');
+      return saved ? JSON.parse(saved) : null;
+    }
+    
+    function clearSavedUser() {
+      sessionStorage.removeItem('social_user');
+    }
+    
+    async function checkSavedLogin() {
+      const savedUser = getSavedUser();
+      if (savedUser) {
+        try {
+          const res = await fetch('/api/users');
+          const allUsers = await res.json();
+          const userExists = allUsers.find(u => u.id === savedUser.id);
+          if (userExists) {
+            currentUser = savedUser;
+            showMainScreen();
+            return true;
+          }
+        } catch(e) {}
+      }
+      return false;
+    }
+    
+    checkSavedLogin();
+    
+    function toggleAuthMode() {
+      isLogin = !isLogin;
+      document.getElementById('auth-title').innerText = isLogin ? '登入' : '註冊';
+      document.getElementById('auth-btn').innerText = isLogin ? '登入' : '註冊';
+      document.getElementById('auth-toggle').innerText = isLogin ? '還沒有帳號？註冊' : '已有帳號？登入';
+      document.getElementById('nickname').style.display = isLogin ? 'none' : 'block';
+      document.getElementById('auth-error').innerText = '';
+    }
+    
+    async function handleAuth() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const nickname = document.getElementById('nickname').value;
+      
+      if (!username || !password) {
+        document.getElementById('auth-error').innerText = '請填寫完整';
+        return;
+      }
+      
+      const url = isLogin ? '/api/login' : '/api/register';
+      const body = isLogin ? { username, password } : { username, password, nickname };
+      
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        if (isLogin) {
+          currentUser = data.user;
+          saveUser(currentUser);
+          showMainScreen();
+        } else {
+          alert('註冊成功，請登入');
+          toggleAuthMode();
+        }
+      } else {
+        document.getElementById('auth-error').innerText = data.message;
+      }
+    }
+    
+    function showMainScreen() {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('main-screen').style.display = 'block';
+      document.getElementById('user-nickname').innerText = currentUser.nickname;
+      loadUsers();
+      loadAllPosts();
+      loadMyProfile();
+    }
+    
+    async function loadUsers() {
+      const res = await fetch('/api/users');
+      users = await res.json();
+    }
+    
+    async function loadAllPosts() {
+      const res = await fetch('/api/all-posts');
+      allPostsData = await res.json();
+      renderPosts(allPostsData, 'posts-list', false);
+    }
+    
+    function isPostLiked(post) {
+      return post.liked_users && post.liked_users.some(u => u.user_id === currentUser.id);
+    }
+    
+    function parseDramaTag(content) {
+      const match = content.match(/\[([^\]]+)\]/);
+      if (match) {
+        return { tag: match[1], text: content.replace(/\[([^\]]+)\]/, '').trim() };
+      }
+      return { tag: null, text: content };
+    }
+    
+    function renderPosts(posts, containerId, showDelete) {
+      const list = document.getElementById(containerId);
+      if (posts.length === 0) {
+        list.innerHTML = '<div style="text-align:center;color:#888;padding:40px;">尚無貼文</div>';
+        return;
+      }
+      list.innerHTML = posts.map(p => {
+        const parsed = parseDramaTag(p.content);
+        return `
+        <div class="post" data-post-id="${p.id}">
+          ${showDelete && p.user_id === currentUser.id ? `<button class="delete-btn" onclick="deletePost(${p.id}, '${containerId}')">刪除</button>` : ''}
+          <div class="user">
+            <div class="avatar" onclick="viewProfile(${p.user_id})">${p.nickname[0]}</div>
+            <div>
+              <div class="name" onclick="viewProfile(${p.user_id})">${p.nickname}</div>
+              <div class="time">${new Date(p.timestamp).toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="content">
+            ${parsed.tag ? `<span class="drama-tag">${parsed.tag}</span>` : ''}
+            ${parsed.text}
+          </div>
+          ${p.image ? `<img class="post-image" src="${p.image}" alt="貼文圖片">` : ''}
+          <div class="post-actions">
+            <button class="like-btn ${isPostLiked(p) ? 'liked' : ''}" onclick="toggleLike(${p.id})">
+              ${isPostLiked(p) ? '❤️' : '🤍'} ${p.likes_count || 0}
+            </button>
+            <button onclick="showComments(${p.id})">💬 留言</button>
+          </div>
+          <div class="comments-section" id="comments-${p.id}" style="display:none;"></div>
+          <div class="comment-input" id="comment-input-${p.id}" style="display:none;">
+            <input type="text" placeholder="寫下留言..." id="comment-text-${p.id}" onkeypress="submitComment(event, ${p.id})">
+            <button onclick="addComment(${p.id})">發送</button>
+          </div>
+        </div>
+      `}).join('');
+    }
+    
+    async function toggleLike(postId) {
+      const post = allPostsData.find(p => p.id === postId) || myPostsData.find(p => p.id === postId);
+      if (!post) return;
+      
+      const isLiked = isPostLiked(post);
+      
+      await fetch(isLiked ? '/api/unlike' : '/api/like', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ post_id: postId, user_id: currentUser.id })
+      });
+      
+      loadAllPosts();
+      if (viewingUserId === currentUser.id || viewingUserId === null) {
+        loadMyProfile();
+      }
+    }
+    
+    async function showComments(postId) {
+      const section = document.getElementById(`comments-${postId}`);
+      const inputSection = document.getElementById(`comment-input-${postId}`);
+      
+      if (section.style.display === 'none') {
+        const res = await fetch(`/api/comments/${postId}`);
+        const comments = await res.json();
+        
+        section.innerHTML = comments.map(c => `
+          <div class="comment">
+            <span class="comment-user">${c.nickname}</span>
+            <span>${c.content}</span>
+            <span class="comment-time">${new Date(c.timestamp).toLocaleTimeString()}</span>
+          </div>
+        `).join('');
+        
+        if (comments.length === 0) {
+          section.innerHTML = '<div class="comment" style="color:#888">尚無留言</div>';
+        }
+        
+        section.style.display = 'block';
+        inputSection.style.display = 'flex';
+      } else {
+        section.style.display = 'none';
+        inputSection.style.display = 'none';
+      }
+    }
+    
+    async function addComment(postId) {
+      const input = document.getElementById(`comment-text-${postId}`);
+      const content = input.value.trim();
+      if (!content) return;
+      
+      await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ post_id: postId, user_id: currentUser.id, content })
+      });
+      
+      input.value = '';
+      showComments(postId);
+    }
+    
+    function submitComment(event, postId) {
+      if (event.key === 'Enter') addComment(postId);
+    }
+    
+    function previewImage() {
+      const input = document.getElementById('image-input');
+      const preview = document.getElementById('image-preview');
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          selectedImage = e.target.result;
+          preview.innerHTML = `<img src="${e.target.result}">`;
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+    
+    async function publishMyPost() {
+      const content = document.getElementById('my-post-content').value;
+      if (!content.trim() && !selectedImage) {
+        alert('請輸入內容或選擇圖片');
+        return;
+      }
+      
+      await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: currentUser.id, content, image: selectedImage || '' })
+      });
+      
+      document.getElementById('my-post-content').value = '';
+      document.getElementById('image-input').value = '';
+      document.getElementById('image-preview').innerHTML = '';
+      selectedImage = null;
+      loadMyProfile();
+      loadAllPosts();
+    }
+    
+    async function deletePost(postId, containerId) {
+      if (!confirm('確定要刪除這則貼文嗎？')) return;
+      
+      await fetch(`/api/posts/${postId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: currentUser.id })
+      });
+      
+      loadAllPosts();
+      loadMyProfile();
+    }
+    
+    async function viewProfile(userId) {
+      viewingUserId = userId;
+      await loadUserProfile(userId);
+      showSection('profile');
+    }
+    
+    async function loadUserProfile(userId) {
+      const res = await fetch(`/api/user/${userId}`);
+      const user = await res.json();
+      
+      if (!user) return;
+      
+      document.getElementById('profile-avatar').innerText = user.nickname[0];
+      document.getElementById('profile-name').innerText = user.nickname;
+      
+      const profileRes = await fetch(`/api/profile/${userId}`);
+      userProfile = await profileRes.json();
+      
+      const introText = userProfile.bio || '分享喜歡的劇和電影';
+      const genreText = userProfile.favorite_genre ? ` | 喜歡: ${userProfile.favorite_genre}` : '';
+      document.getElementById('profile-intro').innerText = introText + genreText;
+      
+      const backBtn = document.getElementById('profile-back-btn');
+      const editBtn = document.getElementById('profile-edit-btn');
+      const myPostBox = document.getElementById('my-post-box');
+      const msgBtn = document.getElementById('profile-message-btn');
+      
+      if (userId === currentUser.id) {
+        backBtn.style.display = 'none';
+        editBtn.style.display = 'block';
+        myPostBox.style.display = 'block';
+        msgBtn.style.display = 'none';
+        viewingUserId = null;
+      } else {
+        backBtn.style.display = 'block';
+        editBtn.style.display = 'none';
+        myPostBox.style.display = 'none';
+        msgBtn.style.display = 'block';
+      }
+      
+      const postsRes = await fetch(`/api/user-posts/${userId}`);
+      myPostsData = await postsRes.json();
+      renderPosts(myPostsData, 'profile-posts', userId === currentUser.id);
+    }
+    
+    function showEditModal() {
+      document.getElementById('edit-modal').style.display = 'block';
+      document.getElementById('edit-nickname').value = currentUser.nickname;
+      document.getElementById('edit-bio').value = userProfile.bio || '';
+      document.getElementById('edit-genre').value = userProfile.favorite_genre || '';
+    }
+    
+    function closeEditModal() {
+      document.getElementById('edit-modal').style.display = 'none';
+    }
+    
+    async function saveProfile() {
+      const nickname = document.getElementById('edit-nickname').value;
+      const bio = document.getElementById('edit-bio').value;
+      const favorite_genre = document.getElementById('edit-genre').value;
+      
+      currentUser.nickname = nickname;
+      saveUser(currentUser);
+      
+      await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: currentUser.id, bio, favorite_genre })
+      });
+      
+      closeEditModal();
+      loadMyProfile();
+      document.getElementById('user-nickname').innerText = currentUser.nickname;
+    }
+    
+    function messageUser() {
+      if (viewingUserId && viewingUserId !== currentUser.id) {
+        const user = users.find(u => u.id === viewingUserId);
+        if (user) {
+          showSection('messages');
+          openChat(viewingUserId, user.nickname);
+        }
+      }
+    }
+    
+    function goBack() {
+      viewingUserId = null;
+      loadAllPosts();
+      showSection('home');
+    }
+    
+    function loadMyProfile() {
+      document.getElementById('profile-avatar').innerText = currentUser.nickname[0];
+      document.getElementById('profile-name').innerText = currentUser.nickname;
+      document.getElementById('profile-back-btn').style.display = 'none';
+      document.getElementById('profile-edit-btn').style.display = 'block';
+      document.getElementById('my-post-box').style.display = 'block';
+      document.getElementById('profile-message-btn').style.display = 'none';
+      viewingUserId = null;
+      
+      fetch(`/api/profile/${currentUser.id}`)
+        .then(res => res.json())
+        .then(profile => {
+          userProfile = profile;
+          const introText = profile.bio || '分享喜歡的劇和電影';
+          const genreText = profile.favorite_genre ? ` | 喜歡: ${profile.favorite_genre}` : '';
+          document.getElementById('profile-intro').innerText = introText + genreText;
+        });
+      
+      fetch(`/api/user-posts/${currentUser.id}`)
+        .then(res => res.json())
+        .then(posts => {
+          myPostsData = posts;
+          renderPosts(posts, 'profile-posts', true);
+        });
+    }
+    
+    function showSection(name) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+      document.getElementById(name + '-section').classList.add('active');
+      event.target.classList.add('active');
+      
+      if (name === 'messages') {
+        loadConversations();
+        startTypingCheck();
+        startMessagePolling();
+      } else if (name === 'profile') {
+        stopTypingCheck();
+        stopMessagePolling();
+        if (viewingUserId) {
+          loadUserProfile(viewingUserId);
+        } else {
+          loadMyProfile();
+        }
+      } else {
+        stopTypingCheck();
+        stopMessagePolling();
+        viewingUserId = null;
+      }
+    }
+    
+    async function loadConversations() {
+      const res = await fetch(`/api/conversations/${currentUser.id}`);
+      const convs = await res.json();
+      
+      const list = document.getElementById('conversation-list');
+      const convsWithNames = convs.map(c => {
+        const partner = users.find(u => u.id === c.partner_id);
+        return partner ? { ...c, nickname: partner.nickname } : c;
+      }).filter(c => c.nickname);
+      
+      list.innerHTML = convsWithNames.map(c => `
+        <div class="chat-item" onclick="openChat(${c.partner_id}, '${c.nickname}')">
+          <div class="avatar">${c.nickname[0]}</div>
+          <div class="info">
+            <div class="name">${c.nickname}</div>
+            <div class="preview">${c.last_message || ''}</div>
+          </div>
+        </div>
+      `).join('');
+      
+      if (convsWithNames.length === 0) {
+        list.innerHTML = '<div style="padding:15px;color:#666;text-align:center">暫無對話</div>';
+      }
+    }
+    
+    async function openChat(userId, nickname) {
+      currentChatUser = { id: userId, nickname };
+      document.getElementById('chat-room').style.display = 'flex';
+      document.getElementById('chat-name').innerText = nickname;
+      document.getElementById('chat-avatar').innerText = nickname[0];
+      
+      loadMessages();
+      loadConversations();
+      startTypingCheck();
+    }
+    
+    async function loadMessages() {
+      if (!currentChatUser) return;
+      const res = await fetch(`/api/messages/${currentUser.id}/${currentChatUser.id}`);
+      const msgs = await res.json();
+      
+      if (msgs.length > 0) {
+        lastMessageId = Math.max(...msgs.map(m => m.id));
+      }
+      
+      const container = document.getElementById('chat-messages');
+      container.innerHTML = msgs.map(m => `
+        <div class="message ${m.sender_id == currentUser.id ? 'sent' : 'received'}">
+          <div class="bubble">
+            ${m.content}
+            <div class="time">${new Date(m.timestamp).toLocaleTimeString()}</div>
+          </div>
+        </div>
+      `).join('');
+      
+      container.scrollTop = container.scrollHeight;
+    }
+    
+    async function sendMessage() {
+      const input = document.getElementById('message-input');
+      const content = input.value.trim();
+      if (!content || !currentChatUser) return;
+      
+      await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sender_id: currentUser.id,
+          receiver_id: currentChatUser.id,
+          content
+        })
+      });
+      
+      await fetch('/api/typing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sender_id: currentUser.id, receiver_id: currentChatUser.id, is_typing: false })
+      });
+      
+      input.value = '';
+      loadMessages();
+      loadConversations();
+    }
+    
+    function handleEnter(e) {
+      if (e.key === 'Enter') sendMessage();
+    }
+    
+    async function handleTyping() {
+      if (!currentChatUser) return;
+      
+      await fetch('/api/typing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sender_id: currentUser.id, receiver_id: currentChatUser.id, is_typing: true })
+      });
+      
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(async () => {
+        await fetch('/api/typing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sender_id: currentUser.id, receiver_id: currentChatUser.id, is_typing: false })
+        });
+      }, 2000);
+    }
+    
+    function startTypingCheck() {
+      stopTypingCheck();
+      checkTypingTimer = setInterval(async () => {
+        if (!currentChatUser) return;
+        const res = await fetch(`/api/typing/${currentUser.id}/${currentChatUser.id}`);
+        const data = await res.json();
+        document.getElementById('typing-indicator').innerText = data.is_typing ? '對方正在輸入中...' : '';
+      }, 500);
+    }
+    
+    function stopTypingCheck() {
+      if (checkTypingTimer) {
+        clearInterval(checkTypingTimer);
+        checkTypingTimer = null;
+      }
+    }
+    
+    function startMessagePolling() {
+      stopMessagePolling();
+      messagePollTimer = setInterval(async () => {
+        if (!currentChatUser) {
+          loadConversations();
+          return;
+        }
+        
+        const res = await fetch(`/api/latest-messages/${currentUser.id}/${currentChatUser.id}/${lastMessageId}`);
+        const newMsgs = await res.json();
+        
+        if (newMsgs.length > 0) {
+          const container = document.getElementById('chat-messages');
+          newMsgs.forEach(m => {
+            const div = document.createElement('div');
+            div.className = `message ${m.sender_id == currentUser.id ? 'sent' : 'received'}`;
+            div.innerHTML = `
+              <div class="bubble">
+                ${m.content}
+                <div class="time">${new Date(m.timestamp).toLocaleTimeString()}</div>
+              </div>
+            `;
+            container.appendChild(div);
+          });
+          
+          lastMessageId = Math.max(...newMsgs.map(m => m.id));
+          container.scrollTop = container.scrollHeight;
+        }
+      }, 2000);
+    }
+    
+    function stopMessagePolling() {
+      if (messagePollTimer) {
+        clearInterval(messagePollTimer);
+        messagePollTimer = null;
+      }
+    }
+    
+    function logout() {
+      clearSavedUser();
+      location.reload();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "social-app",
+  "version": "1.0.0",
+  "description": "社群软体-私讯与贴文功能",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6"
+  }
+}
